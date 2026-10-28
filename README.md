@@ -57,6 +57,114 @@ Internal, not exported: bundled bionic Android 6 `msun` math (`ark_sin`, `ark_co
 
 `FORCE_PRESET` takes a preset ID and an output: 0 speaker, 2 headphone, 3 Bluetooth, 6 covered speaker.
 
+#### 1.4 Preset descriptions
+
+The following descriptions refer to the restored DSP implementation and the mapped BLU V4 preset fields. *Enabled* and *bypassed* describe the preset configuration; actual playback behavior also depends on the selected processing chain and runtime controls.
+
+##### `SPK` — Base BLU profile
+
+The base BLU audio profile. It handles channel gain (+4.5 dB for the left channel, 0 dB for the right), BassEx enhancement (+3 dB of added bass), frequency correction through a 5-band LRC and 10-band output EQ, as well as AGC and MDRC processing. Reverb, SX, and Loudness are disabled.
+
+##### `0_TUNING` — Neutral profile
+
+A neutral audio profile. AGC, SX, BassEx, Reverb, Loudness, and MDRC are configured for bypass. The output EQ has no active bands. No additional bass enhancement or spatial effects are applied through those modules.
+
+##### `1_TUNING` — Bass and stereo enhancement
+
+Provides bass enhancement, stereo processing, equalization, and dynamic compression.
+
+- **BassEx:** Enabled, +5 dB of added bass.
+- **SX:** Enabled.
+- **Output EQ:** 5 bands, including +5 dB at 700 Hz and −4 dB at 9000 Hz.
+- **MDRC:** Enabled.
+- **Reverb:** Disabled.
+
+##### `2_TUNING` — Enhanced bass and multiband processing
+
+Provides stronger bass enhancement, stereo processing, multiband frequency correction, and dynamic compression.
+
+- **BassEx:** Enabled, +8 dB of added bass.
+- **SX:** Enabled, with a +9 dB filter at 200 Hz.
+- **LRC:** 3-band frequency correction.
+- **Output EQ:** 6 bands.
+- **MDRC:** Enabled.
+- **Reverb:** Disabled.
+
+##### `8_BYPASS` — Processing bypass
+
+A bypass configuration intended to disable additional audio processing.
+
+- **BassEx, AGC, SX, Reverb, Loudness, MDRC:** Bypassed.
+- **Output EQ:** 0 active bands.
+
+##### `9_BYPASS` — Processing bypass
+
+Identical in parameters to `8_BYPASS`. A bypass configuration with no additional bass enhancement, spatial effects, or active output EQ bands.
+
+##### `10_TUNING` — Advanced frequency correction
+
+Primarily focuses on detailed frequency correction and LRC balance adjustments.
+
+- **Output EQ:** 9 bands, including +5.5 dB at 800 Hz and multiple mid/high-frequency cuts.
+- **SX, BassEx, Reverb, MDRC:** Bypassed.
+- **Loudness:** Contains a +9 dB setting at 100 Hz, but Loudness is not executed in the standard BLU processing chain.
+
+##### `12_TUNING` — Bass, compression, and spatial reverb
+
+Combines bass enhancement, equalization, compression, and reverberation for the AINUR processing mode.
+
+- **BassEx:** Enabled, +4 dB of added bass.
+- **Output EQ:** 9 bands, including +6 dB at 1000 Hz.
+- **MDRC:** Enabled.
+- **SX:** Disabled.
+- **Reverb:** Enabled in the preset.
+- **Cluster gain:** −14.30 dB.
+- **Late reverb gain:** −10.43 dB.
+- **Maximum delay:** 202.85 ms.
+
+##### `14_TUNING` — Bass, stereo, and reverb enhancement
+
+Combines bass enhancement, stereo processing, equalization, compression, and reverberation for the AINUR processing mode.
+
+- **BassEx:** Enabled, +2 dB of added bass.
+- **SX:** Enabled, with a +6 dB filter at 800 Hz.
+- **Output EQ:** 10 bands.
+- **MDRC:** Enabled.
+- **Reverb:** Enabled in the preset.
+- **Cluster gain:** −9.30 dB.
+- **Late reverb gain:** −10.92 dB.
+- **Maximum delay:** 45.98 ms.
+
+##### `16_TUNING` — Advanced EQ and extended reverb
+
+Combines bass enhancement, extensive frequency correction, dynamic compression, and a pronounced late reverberation tail for the AINUR processing mode.
+
+- **BassEx:** Enabled, +5 dB of added bass.
+- **Output EQ:** 10 bands, including +6 dB at 600 Hz.
+- **MDRC:** Enabled.
+- **SX:** Disabled.
+- **Reverb:** Enabled in the preset.
+- **Cluster gain:** −11.31 dB.
+- **Late reverb gain:** −1.32 dB.
+- **Maximum delay:** 166.66 ms.
+
+##### `19_BYPASS` — Processing bypass
+
+A bypass configuration in which the main DSP enhancement modules are disabled by their respective control flags.
+
+- **BassEx, SX, Reverb, Loudness, MDRC:** Bypassed.
+- **Output EQ:** 0 active bands.
+- **Note:** A +10 dB setting at 600 Hz remains in the bypassed Loudness block and therefore does not produce amplification through that block.
+
+##### Important notes
+
+- Reverberation in `12_TUNING`, `14_TUNING`, and `16_TUNING` requires the **AINUR DSP processing chain** to be active.
+- The reverberator is not invoked in the standard BLU processing chain.
+- All specified dB values represent gain settings of individual DSP modules, **not** the overall device output volume.
+- Enabled/bypassed states describe the preset configuration; audible results depend on the active DSP chain and runtime settings.
+- These descriptions are based on the restored Arkamys Audio implementation and preset mappings. Full behavioral equivalence with the original proprietary BLU library requires additional verification.
+
+
 ### 2. Service app `ArkamysAudio.apk`
 
 Package `com.arkamys.audio`: privileged, persistent system app. Uses the shared library `com.arkamys.audiofx.jar` (class AkmFx).
@@ -163,6 +271,114 @@ C-реимплементация оригинальной BLU `libarkamys_bip_5m
 | `CMD_SET_LIB (0)` | `LIB_BYPASS 0x1000001`, `STREAM_TYPE 0x1000005`, `TUNING_MODE 0x1000007` |
 
 `FORCE_PRESET` принимает пару «пресет + выход»: 0 — динамик, 2 — наушники, 3 — Bluetooth, 6 — закрытый динамик.
+
+#### 1.4 Описание пресетов
+
+Описания относятся к восстановленной реализации DSP и сопоставленным полям пресетов BLU V4. Статусы *включён* и *обход* описывают конфигурацию пресета; реальное поведение при воспроизведении также зависит от выбранной цепочки обработки и настроек во время выполнения.
+
+##### `SPK` — Базовый профиль BLU
+
+Базовый звуковой профиль BLU. Отвечает за усиление каналов (+4,5 дБ для левого канала, 0 дБ для правого), усиление баса BassEx (+3 дБ добавляемого баса), частотную коррекцию через 5-полосный LRC и 10-полосный выходной эквалайзер, а также обработку AGC и MDRC. Реверберация, SX и Loudness отключены.
+
+##### `0_TUNING` — Нейтральный профиль
+
+Нейтральный звуковой профиль. AGC, SX, BassEx, Reverb, Loudness и MDRC настроены на обход обработки (Bypass). Выходной эквалайзер не содержит активных полос. Дополнительное усиление баса и пространственные эффекты через эти модули не применяются.
+
+##### `1_TUNING` — Усиление баса и стереообработка
+
+Отвечает за усиление баса, стереообработку, эквализацию и динамическую компрессию.
+
+- **BassEx:** Включён, +5 дБ добавляемого баса.
+- **SX:** Включён.
+- **Выходной EQ:** 5 полос, включая +5 дБ на 700 Гц и −4 дБ на 9000 Гц.
+- **MDRC:** Включён.
+- **Реверберация:** Отключена.
+
+##### `2_TUNING` — Усиленный бас и многополосная обработка
+
+Отвечает за более сильное усиление баса, стереообработку, многополосную частотную коррекцию и динамическую компрессию.
+
+- **BassEx:** Включён, +8 дБ добавляемого баса.
+- **SX:** Включён, с фильтром +9 дБ на 200 Гц.
+- **LRC:** 3-полосная частотная коррекция.
+- **Выходной EQ:** 6 полос.
+- **MDRC:** Включён.
+- **Реверберация:** Отключена.
+
+##### `8_BYPASS` — Обход обработки
+
+Профиль, предназначенный для отключения дополнительной обработки звука.
+
+- **BassEx, AGC, SX, Reverb, Loudness, MDRC:** Обход.
+- **Выходной EQ:** 0 активных полос.
+
+##### `9_BYPASS` — Обход обработки
+
+По параметрам идентичен `8_BYPASS`. Профиль обхода обработки без дополнительного усиления баса, пространственных эффектов и активных полос выходного эквалайзера.
+
+##### `10_TUNING` — Расширенная частотная коррекция
+
+Основное назначение — детальная коррекция частот и настройка баланса LRC.
+
+- **Выходной EQ:** 9 полос, включая +5,5 дБ на 800 Гц и несколько фильтров ослабления средних и высоких частот.
+- **SX, BassEx, Reverb, MDRC:** Обход.
+- **Loudness:** Содержит настройку +9 дБ на 100 Гц, однако Loudness не выполняется в стандартной цепочке обработки BLU.
+
+##### `12_TUNING` — Бас, компрессия и пространственная реверберация
+
+Объединяет усиление баса, эквалайзер, компрессию и реверберацию для режима обработки AINUR.
+
+- **BassEx:** Включён, +4 дБ добавляемого баса.
+- **Выходной EQ:** 9 полос, включая +6 дБ на 1000 Гц.
+- **MDRC:** Включён.
+- **SX:** Отключён.
+- **Реверберация:** Разрешена в пресете.
+- **Cluster Gain:** −14,30 дБ.
+- **Late Reverb Gain:** −10,43 дБ.
+- **Максимальная задержка:** 202,85 мс.
+
+##### `14_TUNING` — Бас, стереообработка и реверберация
+
+Объединяет усиление баса, стереообработку, эквалайзер, компрессию и реверберацию для режима AINUR.
+
+- **BassEx:** Включён, +2 дБ добавляемого баса.
+- **SX:** Включён, с фильтром +6 дБ на 800 Гц.
+- **Выходной EQ:** 10 полос.
+- **MDRC:** Включён.
+- **Реверберация:** Разрешена в пресете.
+- **Cluster Gain:** −9,30 дБ.
+- **Late Reverb Gain:** −10,92 дБ.
+- **Максимальная задержка:** 45,98 мс.
+
+##### `16_TUNING` — Расширенный EQ и длительная реверберация
+
+Объединяет усиление баса, расширенную частотную коррекцию, динамическую компрессию и выраженный поздний хвост реверберации для режима AINUR.
+
+- **BassEx:** Включён, +5 дБ добавляемого баса.
+- **Выходной EQ:** 10 полос, включая +6 дБ на 600 Гц.
+- **MDRC:** Включён.
+- **SX:** Отключён.
+- **Реверберация:** Разрешена в пресете.
+- **Cluster Gain:** −11,31 дБ.
+- **Late Reverb Gain:** −1,32 дБ.
+- **Максимальная задержка:** 166,66 мс.
+
+##### `19_BYPASS` — Обход обработки
+
+Профиль обхода, в котором основные модули улучшения звука отключены соответствующими управляющими флагами.
+
+- **BassEx, SX, Reverb, Loudness, MDRC:** Обход.
+- **Выходной EQ:** 0 активных полос.
+- **Примечание:** Настройка +10 дБ на 600 Гц сохраняется в блоке Loudness, находящемся в режиме обхода, поэтому не создаёт усиления через этот блок.
+
+##### Важные примечания
+
+- Реверберация в `12_TUNING`, `14_TUNING` и `16_TUNING` работает только при активной **цепочке обработки AINUR DSP**.
+- В стандартной цепочке обработки BLU ревербератор не вызывается.
+- Все указанные значения в дБ относятся к отдельным DSP-модулям, **а не к общей громкости устройства**.
+- Состояния включения и обхода описывают конфигурацию пресета; слышимый эффект зависит от активной DSP-цепочки и настроек во время выполнения.
+- Описания основаны на восстановленной реализации Arkamys Audio и сопоставлении пресетов. Полная эквивалентность поведения с оригинальной проприетарной библиотекой BLU требует дополнительной проверки.
+
 
 ### 2. Приложение `ArkamysAudio.apk`
 
