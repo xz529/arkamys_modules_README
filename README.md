@@ -109,23 +109,6 @@ Package `com.arkamys.audio`: privileged, persistent system app. Uses the shared 
 | `service/res/values/strings.xml`, `service/res/values-ru/strings.xml` | screen strings in English and Russian |
 | `service/res/drawable/ic_arkamys.xml` | **new**: vector icon |
 
-### 3. Magisk module
-
-beta.1 bootlooped: about 1970 Magic Mount mounts each created a `dev.mnt.blk.*` property, the property area filled up and system_server died on `SystemProperties.set`.
-
-| Version | Change |
-|---|---|
-| beta.2 | New files merged with overlayfs instead of Magic Mount: about 30 mounts instead of about 1970 (bootloop fixed). jar moved into `priv-app`, `default-permissions` removed, `akm` moved to the module root. |
-| beta.3 | Overlay layer copied to `/dev`: overlayfs rejects `/data` (f2fs, `EINVAL`). |
-| beta.4 | Overlay layer in an ext4 image `ovl.img` on a loop device: tmpfs has no xattr (`EOPNOTSUPP`). |
-| beta.5 | Image labelled `adb_data_file` plus `allow kernel adb_data_file` in `sepolicy.rule`. **The module works.** |
-| beta.6 | `service.sh`: `debug.log` no longer grows without limit. |
-| beta.7 | Test screen in the app. |
-| beta.8 | Screen no longer freezes; Apply can no longer leave the service stopped. |
-| beta.9 | Bluetooth preset applied immediately. |
-
-`akm` is now run as: `su -c sh /data/adb/modules/ArkamysAudio/akm`
-
 ---
 
 ## Русский
@@ -232,20 +215,3 @@ C-реимплементация оригинальной BLU `libarkamys_bip_5m
 | `service/AndroidManifest.xml` | activity с `LAUNCHER`, `IA_SETTINGS` (категория `ia.sound`), `DISPLAY_AUDIO_EFFECT_CONTROL_PANEL` |
 | `service/res/values/strings.xml`, `service/res/values-ru/strings.xml` | строки экрана на английском и русском |
 | `service/res/drawable/ic_arkamys.xml` | **новый**: векторный значок |
-
-### 3. Модуль Magisk
-
-beta.1 уходила в бутлуп: около 1970 монтирований Magic Mount создавали по свойству `dev.mnt.blk.*`, область свойств заполнялась, и system_server падал на `SystemProperties.set`.
-
-| Версия | Изменение |
-|---|---|
-| beta.2 | Новые файлы подключаются через overlayfs, а не Magic Mount: ~30 монтирований вместо ~1970 (бутлуп устранён). jar перенесён в `priv-app`, `default-permissions` удалён, `akm` в корне модуля. |
-| beta.3 | Слой overlay копируется в `/dev`: overlayfs не принимает `/data` (f2fs, `EINVAL`). |
-| beta.4 | Слой overlay в ext4-образе `ovl.img` на loop-устройстве: у tmpfs нет xattr (`EOPNOTSUPP`). |
-| beta.5 | Метка образа `adb_data_file` и правило `allow kernel adb_data_file` в `sepolicy.rule`. **Модуль заработал.** |
-| beta.6 | `service.sh`: `debug.log` больше не растёт без конца. |
-| beta.7 | Тестовый экран в приложении. |
-| beta.8 | Экран не подвисает; «Применить» больше не может оставить сервис остановленным. |
-| beta.9 | Пресет Bluetooth применяется сразу. |
-
-`akm` теперь запускается так: `su -c sh /data/adb/modules/ArkamysAudio/akm`
